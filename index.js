@@ -192,7 +192,6 @@ async function run() {
     })
 
     // update asset
-
     app.get('/updateAsset/:id', async (req, res) => {
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) };
@@ -368,12 +367,27 @@ async function run() {
 
 
     //adminHome
-    app.get('/mypendingRequest12345/:id', async(req,res)=> {
-      const id = req.params.id;
-      const allReq = await requestAssetCollection.find().limit(5).toArray();
-      const result = allReq.filter(req => req.admin == id && req.status == 'pending');
-      res.send(result);
-    })
+    // app.get('/mypendingRequest12345/:email', async(req,res)=> {
+    //   const id = req.params.id;
+    //   const allReq = await requestAssetCollection.find().limit(5).toArray();
+    //   const result = allReq.filter(req => req.admin == id && req.status == 'pending');
+    //   console.log(result);
+    //   res.send(result);
+    // })
+    app.get('/mypendingRequest12345/:email', async (req, res) => {
+      const email = req.params.email; // Extracting email from params
+      try {
+          // Fetch all requests and filter based on email and status
+          const allReq = await requestAssetCollection.find().toArray();
+          const result = allReq.filter(req => req.admin === email && req.status === 'pending').slice(0, 5); // Slicing for pagination
+          console.log(result);
+          res.send(result);
+      } catch (error) {
+          console.error("Error fetching pending requests:", error);
+          res.status(500).send({ error: "Failed to fetch pending requests" });
+      }
+  });
+  
 
     app.get('/limitedStock/:id', async(req,res)=> {
       const id = req.params.id;
